@@ -1,26 +1,30 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from 'react'
 import { CopyIcon } from './icons'
 
 type TerminalCardProps = {
   label: string
-  command: string
-  copyValue: string
+  commands: string[]
 }
 
-export function TerminalCard({ label, command, copyValue }: TerminalCardProps) {
-  const [copied, setCopied] = useState(false)
-  const [copyStatusText, setCopyStatusText] = useState('Idle')
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+export function TerminalCard({ label, commands }: TerminalCardProps) {
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setCopyStatusText] = useState('Idle')
+  const timeoutRef = useRef<
+    Record<number, ReturnType<typeof setTimeout> | null>
+  >({})
 
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
+      Object.values(timeoutRef?.current).forEach((t) => {
+        if (t) clearTimeout(t)
+      })
     }
   }, [])
 
-  const onCopy = async () => {
+  const onCopy = async (text: string, idx: number) => {
     const supportsClipboard =
       typeof navigator !== 'undefined' && navigator.clipboard
 
@@ -30,16 +34,16 @@ export function TerminalCard({ label, command, copyValue }: TerminalCardProps) {
     }
 
     try {
-      await navigator.clipboard.writeText(copyValue)
-      setCopied(true)
+      await navigator.clipboard.writeText(text)
+      setCopiedIndex(idx)
       setCopyStatusText('Command copied')
 
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
+      if (timeoutRef.current[idx]) {
+        clearTimeout(timeoutRef.current[idx])
       }
 
-      timeoutRef.current = setTimeout(() => {
-        setCopied(false)
+      timeoutRef.current[idx] = setTimeout(() => {
+        setCopiedIndex((current) => (current === idx ? null : current))
         setCopyStatusText('Idle')
       }, 1200)
     } catch {
@@ -63,40 +67,50 @@ export function TerminalCard({ label, command, copyValue }: TerminalCardProps) {
         </div>
       </div>
 
-      <div className='p-5 md:p-6 flex items-center justify-between'>
-        <code
-          className='font-mono text-[14px] md:text-[15px] whitespace-nowrap overflow-x-auto flex-1 text-[#E2E8F0] px-2'
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          <span className='text-[#06B6D4] font-bold mr-2.5'>$</span>
-          {command}
-        </code>
+      <div className='p-5 md:p-6 flex flex-col gap-3'>
+        {commands.map((cmd, idx) => (
+          <div key={idx} className='flex items-center justify-between'>
+            <code
+              className='font-mono text-[14px] md:text-[15px] overflow-x-auto flex-1 text-[#E2E8F0] px-2 whitespace-pre'
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              <span className='text-[#06B6D4] font-bold mr-2.5'>$</span>
+              {cmd}
+            </code>
 
-        <div className='relative ml-4 shrink-0'>
-          <span
-            className={`absolute -top-9 left-1/2 -translate-x-1/2 rounded-md border border-[#1E293B] bg-[#0B1322] px-2.5 py-1 text-[11px] font-medium text-cyan-300 shadow-lg transition-all duration-200 pointer-events-none ${
-              copied ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'
-            }`}
-            role='status'
-            aria-live='polite'
-          >
-            Copied
-          </span>
+            <div className='relative ml-4 shrink-0'>
+              <span
+                className={`absolute -top-9 left-1/2 -translate-x-1/2 rounded-md border border-[#1E293B] bg-[#0B1322] px-2.5 py-1 text-[11px] font-medium text-cyan-300 shadow-lg transition-all duration-200 pointer-events-none ${
+                  copiedIndex === idx
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-1'
+                }`}
+                role='status'
+                aria-live='polite'
+              >
+                Copied
+              </span>
 
-          <button
-            type='button'
-            className='p-2 rounded-md bg-[#1E293B]/40 hover:bg-[#1E293B] text-[#94A3B8] hover:text-white transition-all border border-[#1E293B] shrink-0'
-            onClick={onCopy}
-            title='Copy to clipboard'
-            aria-label='Copy command'
-          >
-            <CopyIcon className='w-4.5 h-4.5' />
-          </button>
-        </div>
+              <button
+                type='button'
+                className='p-2 rounded-md bg-[#1E293B]/40 hover:bg-[#1E293B] text-[#94A3B8] hover:text-white transition-all border border-[#1E293B] shrink-0'
+                onClick={() => onCopy(cmd, idx)}
+                title='Copy to clipboard'
+                aria-label={`Copy command ${idx + 1}`}
+              >
+                <CopyIcon className='w-4.5 h-4.5' />
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
-      <p className='sr-only' aria-live='polite'>
-        {copied ? 'Command copied' : copyStatusText}
+      <p
+        aria-live='polite'
+        className='font-mono text-xs text-[#475569] mb-3 pl-8'
+      >
+        // First command create app with React compiler & second don't have it.
+        Try both!
       </p>
     </section>
   )

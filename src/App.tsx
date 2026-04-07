@@ -5,10 +5,10 @@ import { Footer } from '@/components/landing/Footer'
 import { GitHubButtons } from '@/components/landing/GitHubButtons'
 import { HeroSection } from '@/components/landing/HeroSection'
 import {
-  COPY_COMMAND,
   FEATURE_ITEMS,
   LANDING_COPY,
   QUICK_START_COMMAND,
+  SECOND_QUICK_COMMAND,
 } from '@/components/landing/landingContent'
 import { TerminalCard } from '@/components/landing/TerminalCard'
 
@@ -30,8 +30,7 @@ function App() {
 
         <TerminalCard
           label={LANDING_COPY.terminalLabel}
-          command={QUICK_START_COMMAND}
-          copyValue={COPY_COMMAND}
+          commands={[QUICK_START_COMMAND, SECOND_QUICK_COMMAND]}
         />
 
         <FeatureGrid items={FEATURE_ITEMS} />

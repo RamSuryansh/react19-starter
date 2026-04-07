@@ -2,9 +2,16 @@ export const GITHUB_REPO = 'ramsuryansh/react19-starter'
 export const GITHUB_URL = `https://github.com/${GITHUB_REPO}`
 
 export const QUICK_START_COMMAND =
-  'npx degit ramsuryansh/react19-starter#dev <your-project>'
+  'npx degit RamSuryansh/react19-starter#dev <app_name>'
 
-export const COPY_COMMAND = 'npx degit ramsuryansh/react19-starter#dev my-app'
+export const SECOND_QUICK_COMMAND =
+  'npx degit RamSuryansh/react-tailwind-vite#main <app_name>'
+
+export const COPY_COMMAND =
+  'npx degit RamSuryansh/react19-starter#dev <app_name>'
+
+export const COPY_SECOND_COMMAND =
+  'npx degit RamSuryansh/react-tailwind-vite#main <app_name>'
 
 export const LANDING_COPY = {
   badge: 'Minimal setup. Instant productivity.',
