@@ -16,7 +16,7 @@ export const COPY_SECOND_COMMAND =
 export const LANDING_COPY = {
   badge: 'Minimal setup. Instant productivity.',
   titlePrefix: '',
-  titleAccent: 'Quick Setup, React starter',
+  titleAccent: 'Kickstart Your React19+Vite+Tailwind App',
   description:
     'A blazing fast, unopinionated React boilerplate for the developer community. Engineered for speed and editorial-grade aesthetics.',
   terminalLabel: 'Terminal - Zsh',
